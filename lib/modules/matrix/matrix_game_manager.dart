@@ -144,7 +144,6 @@ class MatrixGameManager {
     if (_currentMatrixIndex > 0) {
       _currentMatrixIndex--;
     }
-    // If already at the first matrix (index 0), do nothing or handle as needed
   }
 
   /// Calculates the total score for the game session.

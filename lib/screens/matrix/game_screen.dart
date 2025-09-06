@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 // Import the game manager from its correct location
-import '../../modules/matrix/matrix_game_manager.dart'; 
+import '../../modules/matrix/matrix_game_manager.dart';
 // Import Matrix model
 import '../../modules/matrix/models/matrix.dart';
-// Import Square model for Active type 
-import '../../modules/matrix/models/square.dart'; 
+// Import Square model for Active type
+import '../../modules/matrix/models/square.dart';
 import 'user_input_screen.dart'; // Import the user input screen
 
 /// A screen that manages the flow of the matrix game.
@@ -56,14 +56,18 @@ class _GameScreenState extends State<GameScreen> {
     _pageController.jumpToPage(_gameManager.currentMatrixIndex);
 
     // Start the display timer for the first matrix
-    _displayTimer = Timer(Duration(milliseconds: (_gameManager.config.showTime * 1000).toInt()), _onDisplayTimeEnd);
+    _displayTimer = Timer(
+        Duration(milliseconds: (_gameManager.config.showTime * 1000).toInt()),
+        _onDisplayTimeEnd);
   }
 
   /// Called when the display time for a matrix ends.
   void _onDisplayTimeEnd() {
     _gameStateStreamController.add(GameState.blank);
     // Start the blank time timer
-    _blankTimer = Timer(Duration(milliseconds: (_gameManager.config.blankTime * 1000).toInt()), _onBlankTimeEnd);
+    _blankTimer = Timer(
+        Duration(milliseconds: (_gameManager.config.blankTime * 1000).toInt()),
+        _onBlankTimeEnd);
   }
 
   /// Called when the blank time ends.
@@ -78,10 +82,12 @@ class _GameScreenState extends State<GameScreen> {
       // Safety check: ensure the PageController is still attached before using it
       if (_pageController.hasClients) {
         _pageController.jumpToPage(_gameManager.currentMatrixIndex);
-      } 
+      }
 
       // Restart the display timer for the next matrix
-      _displayTimer = Timer(Duration(milliseconds: (_gameManager.config.showTime * 1000).toInt()), _onDisplayTimeEnd);
+      _displayTimer = Timer(
+          Duration(milliseconds: (_gameManager.config.showTime * 1000).toInt()),
+          _onDisplayTimeEnd);
     } else if (_gameManager.state == MatrixGameState.userInput) {
       // All matrices have been shown, transition to user input phase
       _gameStateStreamController.add(GameState.userInput);
@@ -128,7 +134,8 @@ class _GameScreenState extends State<GameScreen> {
               return _buildBlankScreen();
             case GameState.userInput:
               // This state transition should navigate away, so a simple container is fine
-              return const Center(child: Text("Cargando entrada del usuario..."));
+              return const Center(
+                  child: Text("Cargando entrada del usuario..."));
           }
         },
       ),
@@ -140,8 +147,9 @@ class _GameScreenState extends State<GameScreen> {
     // Get the current matrix to display from the game manager
     final currentMatrix = _gameManager.currentMatrixToShow;
     if (currentMatrix == null) {
-       // This should not happen in 'displaying' state, but handle gracefully
-       return const Center(child: Text("Error: No se pudo obtener la matriz a mostrar."));
+      // This should not happen in 'displaying' state, but handle gracefully
+      return const Center(
+          child: Text("Error: No se pudo obtener la matriz a mostrar."));
     }
 
     return PageView.builder(
@@ -161,13 +169,11 @@ class _GameScreenState extends State<GameScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Display the matrix for the current page
-              _buildMatrixGrid(currentMatrix), // Use the matrix from the game manager
+              _buildMatrixGrid(
+                currentMatrix,
+              ), // Use the matrix from the game manager
               const SizedBox(height: 20),
               // Countdown timer indicator (simplified)
-              const Text(
-                "Memoriza...",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
             ],
           ),
         );
@@ -187,39 +193,74 @@ class _GameScreenState extends State<GameScreen> {
   Widget _buildMatrixGrid(Matrix matrix) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final maxWidth = constraints.maxWidth > 0 ? constraints.maxWidth * 0.8 : 300.0;
-        final maxHeight = constraints.maxHeight > 0 ? constraints.maxHeight * 0.6 : 300.0;
+        final maxWidth =
+            constraints.maxWidth > 0 ? constraints.maxWidth * 0.8 : 300.0;
+        final maxHeight =
+            constraints.maxHeight > 0 ? constraints.maxHeight * 0.6 : 300.0;
 
-        final double cellSize = (maxWidth / matrix.columns).clamp(20.0, 100.0);
-        final double calculatedHeightCellSize = (maxHeight / matrix.rows).clamp(20.0, 100.0);
-        final double finalCellSize = cellSize < calculatedHeightCellSize ? cellSize : calculatedHeightCellSize;
+        final double cellSize = (maxWidth / matrix.columns).clamp(15.0, 100.0);
+        final double calculatedHeightCellSize =
+            (maxHeight / matrix.rows).clamp(15.0, 100.0);
+        final double finalCellSize = cellSize < calculatedHeightCellSize
+            ? cellSize
+            : calculatedHeightCellSize;
 
-        final double margin = finalCellSize * 0.05;
         final double borderWidth = finalCellSize * 0.03;
 
-        return Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: List.generate(matrix.rows, (y) {
-              return Row(
-                mainAxisSize: MainAxisSize.min,
-                children: List.generate(matrix.columns, (x) {
-                  final square = matrix.get(x, y);
-                  // Use Tailwind's blue-800 for active squares
-                  final color = square is Active ? const Color(0xFF1e40af) : Colors.white;
+        // Determine cell color based on Square state
+        Color getCellColor(Square square) {
+          if (square is Active) {
+            // Use Tailwind's blue-800 for active squares
+            return const Color(0xFF1e40af);
+          } else {
+            // Inactive squares are usually white
+            return Colors.white;
+          }
+        }
 
-                  return Container(
-                    width: finalCellSize - 2 * margin,
-                    height: finalCellSize - 2 * margin,
-                    margin: EdgeInsets.all(margin),
-                    decoration: BoxDecoration(
-                      color: color,
-                      border: Border.all(color: Colors.grey, width: borderWidth),
+        // Build the grid of cells
+        List<Widget> buildRows() {
+          return List.generate(matrix.rows, (y) {
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: List.generate(matrix.columns, (x) {
+                final square = matrix.get(x, y);
+                final color = getCellColor(square);
+
+                return Container(
+                  width: finalCellSize,
+                  height: finalCellSize,
+                  decoration: BoxDecoration(
+                    color: color,
+                    border: Border(
+                      right: BorderSide(
+                        color: Colors.grey,
+                        width: borderWidth,
+                      ),
+                      bottom: BorderSide(
+                        color: Colors.grey,
+                        width: borderWidth,
+                      ),
                     ),
-                  );
-                }),
-              );
-            }),
+                  ),
+                );
+              }),
+            );
+          });
+        }
+
+        return Center(
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.grey,
+                width: borderWidth,
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: buildRows(),
+            ),
           ),
         );
       },

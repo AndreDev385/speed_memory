@@ -1,36 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../shared/providers/matrix_config_provider.dart';
-import '../../modules/matrix/models/matrix_config.dart';
+import '../../shared/providers/colored_figures_config_provider.dart';
+import '../../modules/colored_figures/models/colored_figures_config.dart';
 import '../../shared/theme/dimensions.dart'; // Importar las dimensiones
 
-class MatrixConfigScreen extends StatefulWidget {
-  const MatrixConfigScreen({super.key});
+class ColoredFiguresConfigScreen extends StatefulWidget {
+  const ColoredFiguresConfigScreen({super.key});
 
   @override
-  State<MatrixConfigScreen> createState() => _MatrixConfigScreenState();
+  State<ColoredFiguresConfigScreen> createState() => _ColoredFiguresConfigScreenState();
 }
 
-class _MatrixConfigScreenState extends State<MatrixConfigScreen> {
+class _ColoredFiguresConfigScreenState extends State<ColoredFiguresConfigScreen> {
   final _formKey = GlobalKey<FormState>();
 
   // Controllers for the TextFields
-  late TextEditingController _rowsController;
-  late TextEditingController _columnsController;
-  late TextEditingController _numMatricesController;
+  late TextEditingController _numFiguresController;
   late TextEditingController _showTimeController;
   late TextEditingController _blankTimeController;
 
   @override
   void initState() {
     super.initState();
-    final configProvider = context.read<MatrixConfigProvider>();
+    final configProvider = context.read<ColoredFiguresConfigProvider>();
     final config = configProvider.config;
 
-    _rowsController = TextEditingController(text: config.rows.toString());
-    _columnsController = TextEditingController(text: config.columns.toString());
-    _numMatricesController =
-        TextEditingController(text: config.numberOfMatrices.toString());
+    _numFiguresController =
+        TextEditingController(text: config.numberOfFigures.toString());
     _showTimeController =
         TextEditingController(text: config.showTime.toStringAsFixed(2));
     _blankTimeController =
@@ -39,9 +35,7 @@ class _MatrixConfigScreenState extends State<MatrixConfigScreen> {
 
   @override
   void dispose() {
-    _rowsController.dispose();
-    _columnsController.dispose();
-    _numMatricesController.dispose();
+    _numFiguresController.dispose();
     _showTimeController.dispose();
     _blankTimeController.dispose();
     super.dispose();
@@ -79,18 +73,14 @@ class _MatrixConfigScreenState extends State<MatrixConfigScreen> {
 
   void _saveConfig() {
     if (_formKey.currentState!.validate()) {
-      final configProvider = context.read<MatrixConfigProvider>();
+      final configProvider = context.read<ColoredFiguresConfigProvider>();
 
-      final int rows = int.parse(_rowsController.text);
-      final int columns = int.parse(_columnsController.text);
-      final int numOfMatrices = int.parse(_numMatricesController.text);
+      final int numOfFigures = int.parse(_numFiguresController.text);
       final double showTime = double.parse(_showTimeController.text);
       final double blankTime = double.parse(_blankTimeController.text);
 
-      final MatrixConfig newConfig = MatrixConfig(
-        rows: rows,
-        columns: columns,
-        numberOfMatrices: numOfMatrices,
+      final ColoredFiguresConfig newConfig = ColoredFiguresConfig(
+        numberOfFigures: numOfFigures,
         showTime: showTime,
         blankTime: blankTime,
       );
@@ -104,7 +94,7 @@ class _MatrixConfigScreenState extends State<MatrixConfigScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Configuración de Matrices'),
+        title: const Text('Configuración de Figuras de Colores'),
         centerTitle: true,
       ),
       body: Center(
@@ -119,36 +109,14 @@ class _MatrixConfigScreenState extends State<MatrixConfigScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextFormField(
-                    controller: _rowsController,
+                    controller: _numFiguresController,
                     decoration: const InputDecoration(
-                      labelText: 'Número de Filas',
+                      labelText: 'Número de Figuras',
                       border: OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.number, // Only integers
                     validator: (value) =>
-                        _validatePositiveInteger(value, 'Filas'),
-                  ),
-                  const SizedBox(height: AppDimensions.paddingMedium),
-                  TextFormField(
-                    controller: _columnsController,
-                    decoration: const InputDecoration(
-                      labelText: 'Número de Columnas',
-                      border: OutlineInputBorder(),
-                    ),
-                    keyboardType: TextInputType.number, // Only integers
-                    validator: (value) =>
-                        _validatePositiveInteger(value, 'Columnas'),
-                  ),
-                  const SizedBox(height: AppDimensions.paddingMedium),
-                  TextFormField(
-                    controller: _numMatricesController,
-                    decoration: const InputDecoration(
-                      labelText: 'Número de Matrices',
-                      border: OutlineInputBorder(),
-                    ),
-                    keyboardType: TextInputType.number, // Only integers
-                    validator: (value) =>
-                        _validatePositiveInteger(value, 'Número de Matrices'),
+                        _validatePositiveInteger(value, 'Número de Figuras'),
                   ),
                   const SizedBox(height: AppDimensions.paddingMedium),
                   // Show Time

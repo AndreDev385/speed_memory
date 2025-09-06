@@ -30,6 +30,7 @@ y del número de casillas que tenga cada matriz, a razón de 10 puntos por casil
 
 - Número de figuras
 - Tiempo en pantalla
+- Tiempo en blanco
 
 Esta prueba consiste en memorizar figuras geométricas de colores que se van a ir
 mostrando en pantalla.

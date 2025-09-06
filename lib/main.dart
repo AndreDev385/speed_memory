@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'screens/matrix/matrix_screen.dart';
-import 'screens/colored_figures_screen.dart';
+import 'screens/colored_figures/colored_figures_screen.dart';
 import 'shared/theme/app_theme.dart';
 import 'shared/providers/matrix_config_provider.dart';
+import 'shared/providers/colored_figures_config_provider.dart';
+import 'shared/theme/dimensions.dart'; // Importar las dimensiones
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => MatrixConfigProvider()..loadConfig(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => MatrixConfigProvider()..loadConfig(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ColoredFiguresConfigProvider()..loadConfig(),
+        ),
+      ],
       child: const MyApp(),
     ),
   );
@@ -47,9 +56,9 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingLarge),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 400),
+            constraints: const BoxConstraints(maxWidth: AppDimensions.maxWidthConstraint),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -67,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: const Text('Matrices'),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: AppDimensions.spacingBetweenElements),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -79,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       );
                     },
-                    child: const Text('Figuras'),
+                    child: const Text('Figuras de Colores'),
                   ),
                 ),
               ],

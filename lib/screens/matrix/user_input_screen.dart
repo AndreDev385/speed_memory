@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 // Import the ResultsScreen
-import 'results_screen.dart'; 
+import 'results_screen.dart';
 import '../../modules/matrix/matrix_game_manager.dart';
-import '../../modules/matrix/components/input_matrix.dart';
+import '../../modules/matrix/components/matrix_widget.dart';
+import '../../shared/theme/dimensions.dart'; // Importar las dimensiones
 
 /// An updated minimal screen with proper button states and styles.
 class UserInputScreen extends StatefulWidget {
@@ -40,7 +41,8 @@ class _UserInputScreenState extends State<UserInputScreen> {
         setState(() {
           _currentPageIndex = nextIndex;
         });
-        _pageController.nextPage(duration: const Duration(milliseconds: 200), curve: Curves.ease);
+        _pageController.nextPage(
+            duration: const Duration(milliseconds: 200), curve: Curves.ease);
         // Sync game manager index after UI change
         _gameManager.goToUserMatrixIndex(nextIndex);
       }
@@ -62,9 +64,10 @@ class _UserInputScreenState extends State<UserInputScreen> {
     final prevIndex = _currentPageIndex - 1;
     if (prevIndex >= 0) {
       setState(() {
-         _currentPageIndex = prevIndex;
+        _currentPageIndex = prevIndex;
       });
-      _pageController.previousPage(duration: const Duration(milliseconds: 200), curve: Curves.ease);
+      _pageController.previousPage(
+          duration: const Duration(milliseconds: 200), curve: Curves.ease);
       // Sync game manager index after UI change
       _gameManager.goToUserMatrixIndex(prevIndex);
     }
@@ -81,11 +84,16 @@ class _UserInputScreenState extends State<UserInputScreen> {
   Widget build(BuildContext context) {
     // Determine button states based on the LOCAL _currentPageIndex
     final bool isFirst = _currentPageIndex == 0;
-    final bool isLast = _currentPageIndex == _gameManager.config.numberOfMatrices - 1;
+    final bool isLast =
+        _currentPageIndex == _gameManager.config.numberOfMatrices - 1;
     final String nextButtonLabel = isLast ? 'Completar' : 'Siguiente';
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Matrices')),
+      appBar: AppBar(
+        title: const Text('Matrices'),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+      ),
       body: Column(
         children: [
           // Main Input Area
@@ -102,8 +110,9 @@ class _UserInputScreenState extends State<UserInputScreen> {
               itemCount: _gameManager.config.numberOfMatrices,
               itemBuilder: (context, index) {
                 return Center(
-                  child: InputMatrix(
+                  child: MatrixWidget(
                     initialMatrix: _gameManager.userMatrices[index],
+                    isEditable: true,
                     onMatrixChanged: (newMatrix) {
                       _gameManager.updateCurrentUserInputMatrix(newMatrix);
                     },
@@ -114,16 +123,17 @@ class _UserInputScreenState extends State<UserInputScreen> {
           ),
           // Fixed height for buttons
           SizedBox(
-            height: 60,
+            height: AppDimensions.buttonHeight,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 // Previous Button (ElevatedButton)
                 Expanded(
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 200), // Max width
+                    constraints:
+                        const BoxConstraints(maxWidth: AppDimensions.maxWidthConstraint / 2), // Max width
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spacingHorizontalButtons),
                       child: ElevatedButton(
                         onPressed: isFirst ? null : _onPreviousPressed,
                         child: const Text('Anterior'),
@@ -134,9 +144,10 @@ class _UserInputScreenState extends State<UserInputScreen> {
                 // Next/Complete Button (ElevatedButton)
                 Expanded(
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 200), // Max width
+                    constraints:
+                        const BoxConstraints(maxWidth: AppDimensions.maxWidthConstraint / 2), // Max width
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spacingHorizontalButtons),
                       child: ElevatedButton(
                         onPressed: _onNextPressed,
                         child: Text(nextButtonLabel),
@@ -152,3 +163,4 @@ class _UserInputScreenState extends State<UserInputScreen> {
     );
   }
 }
+

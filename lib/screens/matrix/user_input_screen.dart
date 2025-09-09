@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-// Import the ResultsScreen
 import 'results_screen.dart';
 import '../../modules/matrix/matrix_game_manager.dart';
 import '../../modules/matrix/components/matrix_widget.dart';
-import '../../shared/theme/dimensions.dart'; // Importar las dimensiones
+import '../../modules/matrix/components/matrix_answer_preview_widget.dart';
+import '../../shared/theme/dimensions.dart';
 
 /// An updated minimal screen with proper button states and styles.
 class UserInputScreen extends StatefulWidget {
@@ -18,24 +18,20 @@ class UserInputScreen extends StatefulWidget {
 class _UserInputScreenState extends State<UserInputScreen> {
   late MatrixGameManager _gameManager;
   late PageController _pageController;
-  // Keep track of the current page index locally for UI updates
   int _currentPageIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _gameManager = widget.gameManager;
-    // Initialize the local page index
     _currentPageIndex = _gameManager.currentMatrixIndex;
     _pageController = PageController(initialPage: _currentPageIndex);
   }
 
   void _onNextPressed() {
-    // Let the game manager handle the core logic
     _gameManager.nextMatrix();
 
     if (_gameManager.state == MatrixGameState.userInput) {
-      // Move to the next page in the UI
       final nextIndex = _currentPageIndex + 1;
       if (nextIndex < _gameManager.config.numberOfMatrices) {
         setState(() {
@@ -43,11 +39,9 @@ class _UserInputScreenState extends State<UserInputScreen> {
         });
         _pageController.nextPage(
             duration: const Duration(milliseconds: 200), curve: Curves.ease);
-        // Sync game manager index after UI change
         _gameManager.goToUserMatrixIndex(nextIndex);
       }
     } else if (_gameManager.state == MatrixGameState.results) {
-      // Navigate to the results screen when the game is finished
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => ResultsScreen(gameManager: _gameManager),
@@ -56,11 +50,23 @@ class _UserInputScreenState extends State<UserInputScreen> {
     }
   }
 
+  void _onPreviewItemTapped(int index) {
+    if (index != _currentPageIndex) {
+      setState(() {
+        _currentPageIndex = index;
+      });
+      _pageController.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.ease,
+      );
+      _gameManager.goToUserMatrixIndex(index);
+    }
+  }
+
   void _onPreviousPressed() {
-    // Let the game manager handle the core logic
     _gameManager.previousMatrix();
 
-    // Move to the previous page in the UI
     final prevIndex = _currentPageIndex - 1;
     if (prevIndex >= 0) {
       setState(() {
@@ -68,10 +74,8 @@ class _UserInputScreenState extends State<UserInputScreen> {
       });
       _pageController.previousPage(
           duration: const Duration(milliseconds: 200), curve: Curves.ease);
-      // Sync game manager index after UI change
       _gameManager.goToUserMatrixIndex(prevIndex);
     }
-    // If prevIndex < 0, gameManager.previousMatrix() handles it internally (does nothing)
   }
 
   @override
@@ -82,7 +86,6 @@ class _UserInputScreenState extends State<UserInputScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Determine button states based on the LOCAL _currentPageIndex
     final bool isFirst = _currentPageIndex == 0;
     final bool isLast =
         _currentPageIndex == _gameManager.config.numberOfMatrices - 1;
@@ -96,7 +99,30 @@ class _UserInputScreenState extends State<UserInputScreen> {
       ),
       body: Column(
         children: [
-          // Main Input Area
+          Container(
+            height: AppDimensions.previewSectionHeight,
+            padding: const EdgeInsets.all(AppDimensions.previewContainerPadding),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              border: Border(
+                bottom: BorderSide(color: Colors.grey[300]!),
+              ),
+            ),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: List.generate(
+                  _gameManager.userMatrices.length,
+                  (index) => MatrixAnswerPreviewWidget(
+                    matrix: _gameManager.userMatrices[index],
+                    index: index,
+                    isCurrent: index == _currentPageIndex,
+                    onTap: () => _onPreviewItemTapped(index),
+                  ),
+                ),
+              ),
+            ),
+          ),
           Expanded(
             child: PageView.builder(
               controller: _pageController,
@@ -115,23 +141,22 @@ class _UserInputScreenState extends State<UserInputScreen> {
                     isEditable: true,
                     onMatrixChanged: (newMatrix) {
                       _gameManager.updateCurrentUserInputMatrix(newMatrix);
+                      setState(() {});
                     },
                   ),
                 );
               },
             ),
           ),
-          // Fixed height for buttons
           SizedBox(
             height: AppDimensions.buttonHeight,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // Previous Button (ElevatedButton)
                 Expanded(
                   child: ConstrainedBox(
                     constraints:
-                        const BoxConstraints(maxWidth: AppDimensions.maxWidthConstraint / 2), // Max width
+                        const BoxConstraints(maxWidth: AppDimensions.maxWidthConstraint / 2),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spacingHorizontalButtons),
                       child: ElevatedButton(
@@ -141,11 +166,10 @@ class _UserInputScreenState extends State<UserInputScreen> {
                     ),
                   ),
                 ),
-                // Next/Complete Button (ElevatedButton)
                 Expanded(
                   child: ConstrainedBox(
                     constraints:
-                        const BoxConstraints(maxWidth: AppDimensions.maxWidthConstraint / 2), // Max width
+                        const BoxConstraints(maxWidth: AppDimensions.maxWidthConstraint / 2),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spacingHorizontalButtons),
                       child: ElevatedButton(

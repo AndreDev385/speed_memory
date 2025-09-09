@@ -53,8 +53,10 @@ class _UserInputScreenState extends State<UserInputScreen> {
 
   void _updateCurrentFigureInPreview() {
     if (_selectedFigure != null && _selectedColor != null) {
-      final figureToSave = _createFigureWithColor(_selectedFigure!, _selectedColor!);
-      _gameManager.userSequences[_gameManager.currentFigureIndex] = figureToSave;
+      final figureToSave =
+          _createFigureWithColor(_selectedFigure!, _selectedColor!);
+      _gameManager.userSequences[_gameManager.currentFigureIndex] =
+          figureToSave;
     } else {
       _gameManager.userSequences[_gameManager.currentFigureIndex] = null;
     }
@@ -106,6 +108,7 @@ class _UserInputScreenState extends State<UserInputScreen> {
       ),
       body: Column(
         children: [
+          // Preview
           Container(
             height: AppDimensions.previewSectionHeight,
             padding:
@@ -113,7 +116,7 @@ class _UserInputScreenState extends State<UserInputScreen> {
             decoration: BoxDecoration(
               color: Colors.grey[100],
               border: Border(
-                bottom: BorderSide(color: Colors.grey[300]!),
+                top: BorderSide(color: Colors.grey[300]!),
               ),
             ),
             child: SingleChildScrollView(
@@ -131,167 +134,134 @@ class _UserInputScreenState extends State<UserInputScreen> {
               ),
             ),
           ),
+          // Placeholder
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Text(
-                      'Figura ${_gameManager.currentFigureIndex + 1} de ${_gameManager.config.numberOfFigures}',
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  const Center(
-                    child: Text(
-                      'Tu selección actual:',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Center(
-                    child: Container(
-                      width: 200,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey, width: 2),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Center(
-                        child: _selectedFigure != null && _selectedColor != null
-                            ? ColoredFigureWidget(
-                                figure: _createFigureWithColor(
-                                    _selectedFigure!, _selectedColor!),
-                                size: 150,
-                              )
-                            : const Center(
-                                child: Text(
-                                  'Sin selección',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-
-                  const Center(
-                    child: Text(
-                      'Selecciona el tipo de figura:',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Center(
-                    child: SizedBox(
-                      height: 80,
-                      child: ListView(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          _buildFigureTypeOption(
-                              const Circle(FigureColor.white), 'Círculo'),
-                          _buildFigureTypeOption(
-                              const Square(FigureColor.white), 'Cuadrado'),
-                          _buildFigureTypeOption(
-                              const Triangle(FigureColor.white), 'Triángulo'),
-                          _buildFigureTypeOption(
-                              const Pentagon(FigureColor.white), 'Pentágono'),
-                          _buildFigureTypeOption(
-                              const Hexagon(FigureColor.white), 'Hexágono'),
-                          _buildFigureTypeOption(
-                              const Heptagon(FigureColor.white), 'Heptágono'),
-                          _buildFigureTypeOption(
-                              const Rectangle(FigureColor.white), 'Rectángulo'),
-                          _buildFigureTypeOption(
-                              const Star(FigureColor.white), 'Estrella'),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-
-                  const Center(
-                    child: Text(
-                      'Selecciona el color:',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Center(
-                    child: SizedBox(
-                      height: 50,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        shrinkWrap: true,
-                        children: [
-                          _buildColorOption(FigureColor.black),
-                          _buildColorOption(FigureColor.brown),
-                          _buildColorOption(FigureColor.red), // 3rd from left
-                          _buildColorOption(FigureColor.orange), // After red
-                          _buildColorOption(FigureColor.green),
-                          _buildColorOption(FigureColor.yellow),
-                          _buildColorOption(FigureColor.blue),
-                          _buildColorOption(FigureColor.purple),
-                          _buildColorOption(FigureColor.grey),
-                          _buildColorOption(FigureColor.white),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 200,
-                        child: ElevatedButton(
-                          onPressed: (_selectedFigure != null &&
-                                  _selectedColor != null)
-                              ? _saveFigure
-                              : null,
-                          child: _gameManager.currentFigureIndex <
-                                  _gameManager.config.numberOfFigures - 1
-                              ? const Text('Siguiente')
-                              : const Text('Finalizar'),
+            child: Center(
+              child: SizedBox(
+                width: 200,
+                height: 200,
+                child: Center(
+                  child: _selectedFigure != null && _selectedColor != null
+                      ? ColoredFigureWidget(
+                          figure: _createFigureWithColor(
+                              _selectedFigure!, _selectedColor!),
+                          size: 150,
+                        )
+                      : const Text(
+                          'Sin selección',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey,
+                          ),
                         ),
-                      ),
-                    ],
+                ),
+              ),
+            ),
+          ),
+          // Options
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+            child: Column(
+              children: [
+                const Center(
+                  child: Text(
+                    'Tu selección actual:',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  if (_gameManager.currentFigureIndex > 0) ...[
-                    const SizedBox(height: 10),
-                    Center(
-                      child: TextButton(
-                        onPressed: () {
-                          _gameManager.previousFigure();
-                          setState(() {
-                            if (_gameManager.currentFigureIndex <
-                                _gameManager.userSequences.length) {
-                              final selectedFigure = _gameManager.userSequences[
-                                  _gameManager.currentFigureIndex];
-                              _selectedFigure = selectedFigure;
-                              _selectedColor = selectedFigure?.color;
-                            } else {
-                              _selectedFigure = null;
-                              _selectedColor = null;
-                            }
-                          });
-                        },
-                        child: const Text('Volver a la figura anterior'),
+                ),
+                const SizedBox(height: 10),
+                Center(
+                  child: SizedBox(
+                    height: 80,
+                    child: ListView(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        _buildFigureTypeOption(
+                            const Circle(FigureColor.white), 'Círculo'),
+                        _buildFigureTypeOption(
+                            const Square(FigureColor.white), 'Cuadrado'),
+                        _buildFigureTypeOption(
+                            const Triangle(FigureColor.white), 'Triángulo'),
+                        _buildFigureTypeOption(
+                            const Pentagon(FigureColor.white), 'Pentágono'),
+                        _buildFigureTypeOption(
+                            const Hexagon(FigureColor.white), 'Hexágono'),
+                        _buildFigureTypeOption(
+                            const Heptagon(FigureColor.white), 'Heptágono'),
+                        _buildFigureTypeOption(
+                            const Rectangle(FigureColor.white), 'Rectángulo'),
+                        _buildFigureTypeOption(
+                            const Star(FigureColor.white), 'Estrella'),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Center(
+                  child: SizedBox(
+                    height: 50,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      shrinkWrap: true,
+                      children: [
+                        _buildColorOption(FigureColor.black),
+                        _buildColorOption(FigureColor.brown),
+                        _buildColorOption(FigureColor.red), // 3rd from left
+                        _buildColorOption(FigureColor.orange), // After red
+                        _buildColorOption(FigureColor.green),
+                        _buildColorOption(FigureColor.yellow),
+                        _buildColorOption(FigureColor.blue),
+                        _buildColorOption(FigureColor.purple),
+                        _buildColorOption(FigureColor.grey),
+                        _buildColorOption(FigureColor.white),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 200,
+                      child: ElevatedButton(
+                        onPressed: (_selectedFigure != null &&
+                                _selectedColor != null)
+                            ? _saveFigure
+                            : null,
+                        child: _gameManager.currentFigureIndex <
+                                _gameManager.config.numberOfFigures - 1
+                            ? const Text('Siguiente')
+                            : const Text('Finalizar'),
                       ),
                     ),
                   ],
+                ),
+                if (_gameManager.currentFigureIndex > 0) ...[
+                  const SizedBox(height: 10),
+                  Center(
+                    child: TextButton(
+                      onPressed: () {
+                        _gameManager.previousFigure();
+                        setState(() {
+                          if (_gameManager.currentFigureIndex <
+                              _gameManager.userSequences.length) {
+                            final selectedFigure = _gameManager.userSequences[
+                                _gameManager.currentFigureIndex];
+                            _selectedFigure = selectedFigure;
+                            _selectedColor = selectedFigure?.color;
+                          } else {
+                            _selectedFigure = null;
+                            _selectedColor = null;
+                          }
+                        });
+                      },
+                      child: const Text('Volver a la figura anterior'),
+                    ),
+                  ),
                 ],
-              ),
+              ],
             ),
           ),
         ],
